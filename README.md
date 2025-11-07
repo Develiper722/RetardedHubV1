@@ -1,4 +1,5 @@
 # StupidityHubV1 <br>
+## loadstring loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
 wow my bran is so workie <br>
 anyways uhh the hubs i have made rn use rayfield i might change it <br>
 # Supported Games
