@@ -1,6 +1,5 @@
 local gameScripts = {
-    [78299840360328]  = "https://raw.githubusercontent.com/Develiper722/StupidityHubV1/main/hubscripts/Protect_a_Friend.lua",
-    [8892608969]     = "https://raw.githubusercontent.com/Develiper722/StupidityHubV1/main/hubscripts/Protect_a_Friend.lua",
+    [78299840360328]  = "https://raw.githubusercontent.com/Develiper722/StupidityHubV1/main/hubwarnings/Protect_a_Friend.lua",
     [134497392943706] = "https://raw.githubusercontent.com/Develiper722/StupidityHubV1/main/hubscripts/Protect_a_Friend.lua",
 }
 
