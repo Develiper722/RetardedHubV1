@@ -5,4 +5,4 @@ anyways uhh the hubs i have made rn use rayfield i might change it <br>
 ## Protect a Friend
 ### Status: Working ✔️ <br>
 [Protect a Friend](https://www.roblox.com/games/78299840360328) <br>
-[Game Feature List](https://github.com/Develiper722/StupidityHubV1/blob/main/game_info_for_readme/Protect%20Your%20Friends.md) <br>
+[Game Feature List](https://github.com/Develiper722/StupidityHubV1/blob/main/game_info_for_readme/Protect%20a%20Friend.md) <br>
