@@ -1,7 +1,7 @@
 # StupidityHubV1 <br>
 ### Loadstring 
 ```lua
-loadstring(game:HttpGet("https://raw.githubusercontent.com/Develiper722/StupidityHubV1/master/script.lua"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Develiper722/RetardedHubV1/master/script.lua"))()
 ```
 wow my bran is so workie <br>
 anyways uhh the hubs i have made rn use rayfield i might change it <br>
