@@ -1,118 +1,132 @@
 -- holy fucking shit, FINALLY I MADE IT WORK
 -- StupidHub is a shortended version of stupidityhub
-local Rayfield = loadstring(game:HttpGet("https://raw.githubusercontent.com/SiriusSoftwareLtd/Rayfield/main/source.lua"))()
 
+-- ===== LOAD RAYFIELD SAFELY =====
+local Rayfield
+do
+    local success, result = pcall(function()
+        local code = game:HttpGet("https://sirius.menu/rayfield")
+        return loadstring(code)()
+    end)
+    if success and type(result) == "table" then
+        Rayfield = result
+    else
+        warn("[StupidHub] Failed to load Rayfield! Check your URL or HTTP service.")
+        return
+    end
+end
+
+-- ===== GLOBAL SETTINGS =====
 getgenv().StationAuto = getgenv().StationAuto or {
-	work = {},
-	upgrade = { SU1 = {}, SU10 = {}, SU100 = {} },
-	running = true,
-	debug = false
+    work = {},
+    upgrade = { SU1 = {}, SU10 = {}, SU100 = {} },
+    running = true,
+    debug = false
 }
 
 -- quick unload so i don't have to rejoin this fucking game every 5 minutes
--- i forgot i done this so i rejoined every time i changed anything fuck me
 getgenv().StationAuto.Unload = function()
-	getgenv().StationAuto.running = false
-	for i = 1, 9 do
-		getgenv().StationAuto.work[i] = false
-		getgenv().StationAuto.upgrade.SU1[i] = false
-		getgenv().StationAuto.upgrade.SU10[i] = false
-		getgenv().StationAuto.upgrade.SU100[i] = false
-	end
-	task.wait(0.05)
+    getgenv().StationAuto.running = false
+    for i = 1, 9 do
+        getgenv().StationAuto.work[i] = false
+        getgenv().StationAuto.upgrade.SU1[i] = false
+        getgenv().StationAuto.upgrade.SU10[i] = false
+        getgenv().StationAuto.upgrade.SU100[i] = false
+    end
+    task.wait(0.05)
 end
 
+-- ===== WINDOW =====
 local Window = Rayfield:CreateWindow({
-   Name = "StupidityHubV1`s Billionaire Simulator 2 scipt",
-   Icon = 0, -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
-   LoadingTitle = "Made in only 2 hours",
-   LoadingSubtitle = "by @system96 on discord",
-   ShowText = "StupidHubV1", -- for mobile users to unhide rayfield, change if you'd like
-   Theme = "Default", -- Check https://docs.sirius.menu/rayfield/configuration/themes
+    Name = "StupidityHubV1`s Billionaire Simulator 2 script",
+    Icon = 0,
+    LoadingTitle = "Made in only 2 hours",
+    LoadingSubtitle = "by @system96 on discord",
+    ShowText = "StupidHubV1",
+    Theme = "Default"
+})
 
--- WaitForChild chain: if this blows up, it's probs my code's fault this time, 
+-- ===== GET HQ AND CLICK REMOTE SAFELY =====
 local hqFolder = workspace:WaitForChild("HQs")
 local hq = hqFolder:WaitForChild("HQ1")
-local clickRemote = hq:WaitForChild("Clicked")
+local clickRemote = hq:FindFirstChild("Clicked")
+
+if not clickRemote or clickRemote.ClassName ~= "RemoteEvent" then
+    warn("[StupidHub] Click remote not found or invalid! Stopping script.")
+    return
+end
 
 -- ===== AUTO WORK TAB =====
--- goddamn 9 toggles, why did i agree to do this
 local WorkTab = Window:CreateTab("Auto Work")
 for i = 1, 9 do
-	getgenv().StationAuto.work[i] = getgenv().StationAuto.work[i] or false
+    getgenv().StationAuto.work[i] = getgenv().StationAuto.work[i] or false
 
-	WorkTab:CreateToggle({
-		Name = "Auto Work on " .. i,
-		CurrentValue = getgenv().StationAuto.work[i],
-		Flag = "AutoWork" .. i,
-		Callback = function(state)
-			getgenv().StationAuto.work[i] = state
-			if state then
-				task.spawn(function()
-					-- if this loop spams like an idiot, blame the tiny wait and my impatience
-					while getgenv().StationAuto.running and getgenv().StationAuto.work[i] do
-						pcall(function()
-							clickRemote:FireServer("SW", i)
-						end)
-						task.wait(0.1)
-					end
-				end)
-			end
-		end,
-	})
+    WorkTab:CreateToggle({
+        Name = "Auto Work on " .. i,
+        CurrentValue = getgenv().StationAuto.work[i],
+        Flag = "AutoWork" .. i,
+        Callback = function(state)
+            getgenv().StationAuto.work[i] = state
+            if state then
+                task.spawn(function()
+                    while getgenv().StationAuto.running and getgenv().StationAuto.work[i] do
+                        pcall(function()
+                            clickRemote:FireServer("SW", i)
+                        end)
+                        task.wait(0.1)
+                    end
+                end)
+            end
+        end
+    })
 end
 
 -- ===== AUTO UPGRADE TAB =====
 local UpgradeTab = Window:CreateTab("Auto Upgrades")
 for i = 1, 9 do
-	for _, t in ipairs({ "SU1", "SU10", "SU100" }) do
-		getgenv().StationAuto.upgrade[t][i] = getgenv().StationAuto.upgrade[t][i] or false
+    for _, t in ipairs({ "SU1", "SU10", "SU100" }) do
+        getgenv().StationAuto.upgrade[t][i] = getgenv().StationAuto.upgrade[t][i] or false
 
-		UpgradeTab:CreateToggle({
-			Name = string.format("%s on %d", t, i),
-			CurrentValue = getgenv().StationAuto.upgrade[t][i],
-			Flag = "AutoUpgrade_" .. t .. "_" .. i,
-			Callback = function(state)
-				getgenv().StationAuto.upgrade[t][i] = state
-				if state then
-					task.spawn(function()
-						-- okay this is the one that used to murder servers. handle with caution, you reckless ape.
-						while getgenv().StationAuto.running and getgenv().StationAuto.upgrade[t][i] do
-							pcall(function()
-								clickRemote:FireServer(t, i)
-							end)
-							task.wait(0.2)
-						end
-					end)
-				end
-			end,
-		})
-	end
+        UpgradeTab:CreateToggle({
+            Name = string.format("%s on %d", t, i),
+            CurrentValue = getgenv().StationAuto.upgrade[t][i],
+            Flag = "AutoUpgrade_" .. t .. "_" .. i,
+            Callback = function(state)
+                getgenv().StationAuto.upgrade[t][i] = state
+                if state then
+                    task.spawn(function()
+                        while getgenv().StationAuto.running and getgenv().StationAuto.upgrade[t][i] do
+                            pcall(function()
+                                clickRemote:FireServer(t, i)
+                            end)
+                            task.wait(0.2)
+                        end
+                    end)
+                end
+            end
+        })
+    end
 end
 
 -- ===== CONTROL TAB =====
--- yay it all workie now!
 local ControlTab = Window:CreateTab("Control")
 ControlTab:CreateButton({
-	Name = "Stop All",
-	Callback = function()
-		getgenv().StationAuto.Unload()
-	end,
+    Name = "Stop All",
+    Callback = function()
+        getgenv().StationAuto.Unload()
+    end
 })
 
 ControlTab:CreateToggle({
-	Name = "Debug Logs",
-	CurrentValue = getgenv().StationAuto.debug,
-	Flag = "StationAutoDebug",
-	Callback = function(v)
-		getgenv().StationAuto.debug = v
-		if v then
-			print("[StationAuto] debug enabled")
-		end
-	end,
+    Name = "Debug Logs",
+    CurrentValue = getgenv().StationAuto.debug,
+    Flag = "StationAutoDebug",
+    Callback = function(v)
+        getgenv().StationAuto.debug = v
+        if v then
+            print("[StationAuto] debug enabled")
+        end
+    end
 })
 
--- if you toggle everything at once you are a monster
--- this ran at 3am while listening to shitty lo-fi and regretting my life choices
--- if warnings pop up, close your eyes, chant "it works" and keep going
--- fucking FINALLY I MADE IT WORK
+print("[StupidHub] Loaded successfully! FINALLY I MADE IT WORK")
